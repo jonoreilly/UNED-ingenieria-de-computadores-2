@@ -1,0 +1,9 @@
+A00*x0   +   A01*x1   +   A02*x2   + ...A0X*xX
+A10*x0   +   A11*x1   +   A12*x2   + ...A0X*xX
+A20*x0   +   A21*x1   +   A22*x2   + ...A0X*xX
+A30*x0   +   A31*x1   +   A32*x2   + ...A0X*xX
+A40*x0   +   A41*x1   +   A42*x2   + ...A0X*xX
+A50*x0   +   A51*x1   +   A52*x2   + ...A0X*xX
+A60*x0   +   A61*x1   +   A62*x2   + ...A0X*xX
+...
+AF0*x0   +   AF1*x1   +   AF2*x2   + ...AFX*xX

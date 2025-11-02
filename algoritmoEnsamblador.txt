@@ -1,0 +1,74 @@
+A = matriz
+x = vector columna
+b = resultado
+n = tamaño de A*x
+
+
+// Escalar
+
+filas = A.length / n
+
+for (indiceFila = 0; indiceFila < filas; indiceFila++) {
+
+  valor = 0
+
+  for (indiceValor = 0; indiceValor < n; indiceValor++) {
+    valorA = A[indiceFila][indiceValor]
+
+    valorN = n[indiceValor]
+
+    valorMult = valorA * valorB
+
+    valor = valor + valorMult
+  }
+
+  b[indiceFila] = valor
+}
+
+// Vectorial
+
+filas = A.length / n
+
+for (indiceFila = 0; indiceFila < filas; indiceFila++) {
+  vectorA = A[indiceFila]
+
+  vectorMult = multV(vectorA, n)
+
+  valor = 0
+
+  for (indiceValor = 0; indiceValor < n; indiceValor++) {
+    valorMult = vectorMult[indiceValor]
+
+    valor = valor + valorMult
+  }
+
+  b[indiceFila] = valor
+}
+
+// Vectorial v2
+
+// A = A00, A01, A02, A10, A11, A12, A20, A21, A22
+// x = x0, x1, x2
+// n = 3
+
+filas = A.length / n
+
+vectorColumnasMult = []
+
+for (indiceColumna = 0; indiceColumna < n; indiceColumna++) {
+  vectorColumnaA = getVectorColumna(A, indiceColumna)
+
+  valorX = x[indiceColumna]
+
+  vectorColumnaMultAX = multVS(vectorColumnaA, valorX)
+
+  vectoresColumnaMultAX[indiceColumna] = vectorColumnaMultAX
+}
+
+b = [0]
+
+for (indiceFila = 0; indiceFila < filas; indiceFila++) {
+  vectorColumnaMultAX = vectoresColumnaMultAX[indiceFila]
+
+  b = sumV(b, vectorColumnaMult)
+}
