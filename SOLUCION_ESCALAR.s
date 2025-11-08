@@ -50,7 +50,6 @@
         ; Set element size to 8 bytes (.double)
         addi r2, r0, 8                                  ; elementSize = 8
 
-
         setup_loop_i:
                 addi r3, r0, 0                          ; i = 0
         start_loop_i:
@@ -105,3 +104,4 @@
                 nop
         end_loop_i:
 
+        trap 6
