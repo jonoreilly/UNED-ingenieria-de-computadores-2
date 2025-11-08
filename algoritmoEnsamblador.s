@@ -6,79 +6,82 @@
         VECTOR_X: .double 1,2,3
         
         ; vector Nx1
-        B: .space 24
+        RESULTADO_B: .space 24
         
         ; M = N = 3. P = 1
         N: .word 3
         
 .text
 
-        ; r1: row index (i)
-        ; r2: column index (j)
-        ; r3: inner index (k)
-        ; r4: address of MATRIZ_A
-        ; r5: address of VECTOR_X
-        ; r6: address of result
-        ; r7: temp value from MATRIZ_A
-        ; r8: temp value from VECTOR_X
-        ; r9: accumulator (sum)
-        ; r10: offset calculation
+        ; i: row index (i)
+        ; j: column index (j)
+
+        ; sum: temp result cell value (sum)
+        ; mult: temp result cell value (mult)
+        
+        ; elementA: temp value MATRIZ_A[i][j] (elementA)
+        ; elementX: temp value VECTOR_X[j] (elementX)
+
+        ; offsetRowElementsA: offset calculation A (offsetRowElementsA)
+        ; offsetElementsA: offset calculation A (offsetElementsA)
+        ; offsetA: offset calculation A (offsetA)
+        ; addressElementA: offset calculation A (addressElementA)
+        
+        ; offsetX: offset calculation X (offsetX)
+        ; addressElementX: offset calculation X (addressElementX)
+        
+        ; temp: temp variable for jumps and such (temp)
 
         setup_loop_i:
-                addi r1, r0, 0                                  ; i = 0
+                addi i, r0, 0                                           ; i = 0
         start_loop_i:
-                slti r11, r1, M                                 ; if i < M
-                beqz r11, end_loop_i                            ; then goto end_loop_i
+                slti temp, i, N                                         ; if i < N
+                beqz temp, end_loop_i                                   ; then goto end_loop_i
                 nop
+        body_loop_i:
+
+                ; Initialize variables 
+                addi sum, r0, 0                                         ; sum = 0
 
                 setup_loop_j:
-                        addi r2, r0, 0                          ; j = 0
+                        addi j, r0, 0                                   ; j = 0
                 start_loop_j:
-                        slti r12, r2, P                         ; if j < P
-                        beqz r12, end_loop_j                    ; then goto end_loop_j
+                        slti temp, j, N                                 ; if j < N
+                        beqz temp, end_loop_j                           ; then goto end_loop_j
                         nop
+                body_loop_j:
 
-                        addi r9, r0, 0                          ; sum = 0
-
-                        setup_loop_k:
-                                addi r3, r0, 0                  ; k = 0
-                        start_loop_k:
-                                slti r13, r3, N                 ; if k < N
-                                beqz r13, end_loop_k            ; then goto end_loop_k
-                                nop
-
-                                ; Calculate MATRIZ_A[i][k] address
-                                sll r10, r1, log2(N*4)          ; i*N*4
-                                sll r14, r3, 2                  ; k*4
-                                add r10, r10, r14               ; offset
-                                add r10, r4, r10                ; base + offset
-                                lw r7, 0(r10)                   ; load MATRIZ_A[i][k]
-
-                                ; Calculate VECTOR_X[k][j] address
-                                sll r15, r3, log2(P*4)          ; k*P*4
-                                sll r16, r2, 2                  ; j*4
-                                add r15, r15, r16               ; offset
-                                add r15, r5, r15                ; base + offset
-                                lw r8, 0(r15)                   ; load VECTOR_X[k][j]
-                                mult r17, r7, r8                ; temp = MATRIZ_A[i][k] * VECTOR_X[k][j]
-                                add r9, r9, r17                 ; sum += temp
-                                addi r3, r3, 1                  ; k++
-                                j start_loop_k                  ; goto start_loop_k
-                                nop
-                        end_loop_k:
+                        ; Fetch MATRIZ_A[i][j]
+                        mult offsetRowElementsA, i, N                   ; offsetRowElementsA = i * N
+                        add offsetElementsA, offsetRowElementsA, j      ; offsetElementsA = offsetRowElementsA + j                              
+                        mult offsetA, offsetElementsA, size             ; offsetA = offsetElementsA * size
+                        add addressElementA, addressA, offsetA          ; addressElementA = addressA + offsetA
+                        lw elementA, 0(addressElementA)                 ; elementA = *addressElementA
                         
-                        // Store result[i][j]
-                        sll r18, r1, log2(P*4)                  ; i*P*4
-                        sll r19, r2, 2                          ; j*4
-                        add r18, r18, r19                       ; offset
-                        add r18, r6, r18                        ; base + offset
-                        sw 0(r18), r9                           ; result[i][j] = sum
-                        addi r2, r2, 1                          ; j++
-                        j start_loop_j                          ; goto start_loop_j
+                        ; Fetch VECTOR_X[j]                         
+                        mult offsetX, j, size                           ; offsetX = j * size
+                        add addressElementX, addressX, offsetX          ; addressElementX = addressX + offsetX
+                        lw elementX, 0(addressElementX)                 ; elementX = *addressElementX
+
+                        ; Calculate mult value
+                        mult mult, elementA, elementX                   ; mult = elementA * elementX
+                        
+                        ; Update sum value
+                        add sum, sum, mult                              ; sum = sum + mult
+
+                tail_loop_j:
+                        addi j, j, 1                                    ; j++
+                        j start_loop_j                                  ; goto start_loop_j
                         nop
                 end_loop_j:
-
-                addi r1, r1, 1                                  ; i++
+                
+                // Store sum in RESULTADO_B[i]
+                mult offsetB, j, size                                   ; offsetB = i * size
+                add addressElementB, addressB, offsetB                  ; addressElementB = addressB + offsetB
+                sw 0(addressElementX), sum                              ; *addressElementB = sum
+                
+        tail_loop_i:
+                addi i, i, 1                                            ; i++
                 j start_loop_i
                 nop
         end_loop_i:
