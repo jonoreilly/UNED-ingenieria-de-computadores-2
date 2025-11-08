@@ -2,6 +2,8 @@
 
 This guide provides instructions and best practices for writing assembly code for the DLXV architecture.
 
+For more in-depth documentation and reference, see [Manual_WinDLXV.pdf](../Documentos PED-20251023/Manual_WinDLXV.pdf) located in the workspace.
+
 ## Register Set
 
 The DLXV processor has 32 general-purpose registers:
