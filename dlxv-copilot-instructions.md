@@ -6,10 +6,19 @@ For more in-depth documentation and reference, see [Manual_WinDLXV.pdf](../Docum
 
 ## Register Set
 
-The DLXV processor has 32 general-purpose registers:
-- R0: Always contains 0
-- R1-R31: General purpose registers
-- F0-F31: Floating point registers
+The DLXV processor has: 
+- 32 scalar general-purpose registers:
+    - R0: Always contains 0
+    - R1-R31: General purpose registers
+- 32 scalar general-purpose floating point registers:
+    - F0-F31: Floating point registers
+- 8 vector registers (64 words each):
+    - V0-V7
+
+Special registers
+- FPSR (Floating-Point Status Register): 1 bit register used for floating point comparisons and exceptions
+- VLR (Vector-Length Register): vector length register used to control the length of any vector operation
+- VM (Vector-Mask Register): 64 bit mask to decide what elements of the vector to apply the operation to
 
 Common register conventions:
 - R26-R27 (K0-K1): Reserved for OS
