@@ -70,12 +70,12 @@
                         mult r9, r3, r1                 ; offsetRowElementsA = i * n
                         add r10, r9, r3                 ; offsetElementsA = offsetRowElementsA + j                              
                         mult r11, r10, r2               ; offsetA = offsetElementsA * elementSize
-                        add r12, addressA, r11          ; addressElementA = addressA + offsetA
+                        add r12, MATRIZ_A, r11          ; addressElementA = addressA + offsetA
                         lw r7, 0(r12)                   ; elementA = *addressElementA
                         
                         ; Load elementX from VECTOR_X[j]                         
                         mult r13, r3, r2                ; offsetX = j * elementSize
-                        add r14, addressX, r13          ; addressElementX = addressX + offsetX
+                        add r14, VECTOR_X, r13          ; addressElementX = addressX + offsetX
                         lw r8, 0(r14)                   ; elementX = *addressElementX
 
                         ; Calculate mult value
@@ -92,7 +92,7 @@
                 
                 // Store sum in RESULTADO_B[i]
                 mult r15, r0, r2                        ; offsetB = i * elementSize
-                add r16, addressB, r15                  ; addressElementB = addressB + offsetB
+                add r16, RESULTADO_B, r15               ; addressElementB = addressB + offsetB
                 sw 0(r14), sum                          ; *addressElementB = sum
                 
         tail_loop_i:
