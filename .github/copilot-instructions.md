@@ -2,7 +2,7 @@
 
 This guide provides instructions and best practices for writing assembly code for the DLXV architecture.
 
-For more in-depth documentation and reference, see [Manual_WinDLXV.pdf](../Documentos PED-20251023/Manual_WinDLXV.pdf) located in the workspace.
+For more in-depth documentation and reference, see [Manual_WinDLXV.txt](../../Documentos PED-20251023/Manual_WinDLXV.txt) located in the workspace.
 
 ## Register Set
 
