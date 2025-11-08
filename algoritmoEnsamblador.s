@@ -1,19 +1,26 @@
 .data
-        A: .double 11,12,13,21,22,23,31,33,33
-        x: .double 1,2,3
-        b: .space 24
-        n: .word 3
+        ; matriz NxN
+        MATRIZ_A: .double 11,12,13,21,22,23,31,33,33
+        
+        ; vector Nx1 
+        VECTOR_X: .double 1,2,3
+        
+        ; vector Nx1
+        B: .space 24
+        
+        ; M = N = 3. P = 1
+        N: .word 3
         
 .text
 
         ; r1: row index (i)
         ; r2: column index (j)
         ; r3: inner index (k)
-        ; r4: address of matrizA
-        ; r5: address of matrizB
+        ; r4: address of MATRIZ_A
+        ; r5: address of VECTOR_X
         ; r6: address of result
-        ; r7: temp value from matrizA
-        ; r8: temp value from matrizB
+        ; r7: temp value from MATRIZ_A
+        ; r8: temp value from VECTOR_X
         ; r9: accumulator (sum)
         ; r10: offset calculation
 
@@ -40,20 +47,20 @@
                                 beqz r13, end_loop_k            ; then goto end_loop_k
                                 nop
 
-                                ; Calculate matrizA[i][k] address
+                                ; Calculate MATRIZ_A[i][k] address
                                 sll r10, r1, log2(N*4)          ; i*N*4
                                 sll r14, r3, 2                  ; k*4
                                 add r10, r10, r14               ; offset
                                 add r10, r4, r10                ; base + offset
-                                lw r7, 0(r10)                   ; load matrizA[i][k]
+                                lw r7, 0(r10)                   ; load MATRIZ_A[i][k]
 
-                                ; Calculate matrizB[k][j] address
+                                ; Calculate VECTOR_X[k][j] address
                                 sll r15, r3, log2(P*4)          ; k*P*4
                                 sll r16, r2, 2                  ; j*4
                                 add r15, r15, r16               ; offset
                                 add r15, r5, r15                ; base + offset
-                                lw r8, 0(r15)                   ; load matrizB[k][j]
-                                mult r17, r7, r8                ; temp = matrizA[i][k] * matrizB[k][j]
+                                lw r8, 0(r15)                   ; load VECTOR_X[k][j]
+                                mult r17, r7, r8                ; temp = MATRIZ_A[i][k] * VECTOR_X[k][j]
                                 add r9, r9, r17                 ; sum += temp
                                 addi r3, r3, 1                  ; k++
                                 j start_loop_k                  ; goto start_loop_k
