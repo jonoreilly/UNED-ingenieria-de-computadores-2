@@ -1,6 +1,6 @@
 .data
 
-        ; vector Nx1 (resultado esperado: 301,511,721,931,1141,1351)
+        ; vector Nx1 (resultado esperado: 735,1185,1635,2085,2535,2985,3435,3885,4335)
         RESULTADO_B: .space 72
         
         ; matriz NxN
@@ -23,4 +23,4 @@
         CERO:     .double 0
         
         ; Tamanio de la matriz
-        N:        .word 6
+        N:        .word 9

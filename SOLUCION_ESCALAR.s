@@ -10,12 +10,14 @@
         
         ; vector Nx1 
         VECTOR_X: .double 1,2,3,4,5,6
+
+        MATRIZ_C: .space 288
         
         ; valor 0
-        CERO: .double 0
+        CERO:     .double 0
         
         ; Tamanio de la matriz
-        N: .word 6
+        N:        .word 6
         
 .text
 

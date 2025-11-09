@@ -1,1 +1,21 @@
-codigo, data, ciclos, instrucciones
+codigo, data, ciclos, instrucciones, adelantamiento, estado
+escalar, 1, 78, 32, sin adelantamiento, correcto
+vectorial, 1, 93, 34, sin adelantamiento, correcto
+escalar, 2, 218, 85, sin adelantamiento, correcto
+vectorial, 2, 156, 52, sin adelantamiento, correcto
+escalar, 3, 436, 166, sin adelantamiento, correcto
+vectorial, 3, 215, 70, sin adelantamiento, correcto
+escalar, 4, 732, 275, sin adelantamiento, correcto
+vectorial, 4, 282, 88, sin adelantamiento, correcto
+escalar, 5, 1106, 412, sin adelantamiento, correcto
+vectorial, 5, 357, 106, sin adelantamiento, correcto
+escalar, 6, 1558, 577, sin adelantamiento, correcto
+vectorial, 6, 441, 124, sin adelantamiento, correcto
+escalar, 7, 2088, 770, sin adelantamiento, correcto
+vectorial, 7, 535, 142, sin adelantamiento, correcto
+escalar, 8, 2696, 991, sin adelantamiento, correcto
+vectorial, 8, 637, 160, sin adelantamiento, correcto
+escalar, 9, 3382, 1240, sin adelantamiento, correcto
+vectorial, 9, 792, 178, sin adelantamiento, correcto
+escalar, 10, 4146, 1517, sin adelantamiento, correcto
+vectorial, 10, 925, 196, sin adelantamiento, correcto
