@@ -36,13 +36,13 @@
 
         ; r5: elementos de las i filas de A (elementosFilasA)
         ; r6: posicion del elemento i,j de A (posicionElementoA)
-        ; r7: offset de la direccion del elemento i,j de A respecto al inicio de A (offsetElementoA)
+        ; r7: desplazamiento de la direccion del elemento i,j de A respecto al inicio de A (desplazamientoElementoA)
         ; r8: direccion del elemento i,j de A (direccionElementoA)
         
-        ; r9: offset de la direccion del elemento j de X respecto al inicio de X (offsetElementoX)
+        ; r9: desplazamiento de la direccion del elemento j de X respecto al inicio de X (desplazamientoElementoX)
         ; r10: direccion del elemento j de X (direccionElementoX)
         
-        ; r11: offset de la direccion del elemento i de B respecto al inicio de B (offsetElementoB)
+        ; r11: desplazamiento de la direccion del elemento i de B respecto al inicio de B (desplazamientoElementoB)
         ; r12: direccion del elemento i de B (direccionElementoB)
         
         ; r13: variable provisional para saltos y comparaciones (temp)
@@ -80,13 +80,13 @@
                         ; Carga el elemento MATRIZ_A[i][j]
                         mult r5, r3, r1                 ; elementosFilasA = i * n
                         add r6, r5, r4                  ; posicionElementoA = elementosFilasA + j                              
-                        mult r7, r6, r2                 ; offsetElementoA = posicionElementoA * tamanioElemento
-                        addi r8, r7, MATRIZ_A           ; direccionElementoA = offsetElementoA + *MATRIZ_A
+                        mult r7, r6, r2                 ; desplazamientoElementoA = posicionElementoA * tamanioElemento
+                        addi r8, r7, MATRIZ_A           ; direccionElementoA = desplazamientoElementoA + *MATRIZ_A
                         ld f6, 0(r8)                    ; elementoA = &direccionElementoA
                         
                         ; Carga el elemento VECTOR_X[j]                         
-                        mult r9, r4, r2                 ; offsetElementoX = j * tamanioElemento
-                        addi r10, r9, VECTOR_X          ; direccionElementoX = offsetElementoX + *VECTOR_X
+                        mult r9, r4, r2                 ; desplazamientoElementoX = j * tamanioElemento
+                        addi r10, r9, VECTOR_X          ; direccionElementoX = desplazamientoElementoX + *VECTOR_X
                         ld f8, 0(r10)                   ; elementoX = &direccionElementoX
 
                         ; Calcula la multiplicacion
@@ -101,8 +101,8 @@
                 end_loop_j:
                 
                 ; Guarda la suma en RESULTADO_B[i]
-                mult r11, r3, r2                        ; offsetElementoB = i * tamanioElemento
-                addi r12, r11, RESULTADO_B              ; direccionElementoB = offsetElementoB + *RESULTADO_B
+                mult r11, r3, r2                        ; desplazamientoElementoB = i * tamanioElemento
+                addi r12, r11, RESULTADO_B              ; direccionElementoB = desplazamientoElementoB + *RESULTADO_B
                 sd 0(r12), f2                           ; *direccionElementoB = suma
                 
         tail_loop_i:
