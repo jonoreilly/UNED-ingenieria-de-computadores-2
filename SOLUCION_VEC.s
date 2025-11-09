@@ -14,10 +14,10 @@
         MATRIZ_C: .space 288
         
         ; valor 0
-        CERO: .double 0
+        CERO:     .double 0
         
-        ; Size of matrix
-        N: .word 6
+        ; Tamanio de la matriz
+        N:        .word 6
         
 .text
 

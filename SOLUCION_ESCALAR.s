@@ -14,7 +14,7 @@
         ; valor 0
         CERO: .double 0
         
-        ; Size of matrix
+        ; Tamanio de la matriz
         N: .word 6
         
 .text
