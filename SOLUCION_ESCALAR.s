@@ -17,7 +17,8 @@
         
 .text
 
-        ; r0: valor 0
+        ; r0: value 0
+        ; f0: value 0
 
         ; r1: value of N (n)
         ; r2: size of elements (elementSize)
@@ -25,11 +26,11 @@
         ; r3: row index (i)
         ; r4: column index (j)
 
-        ; f0: temp result cell value (sum)
-        ; f2: temp result cell value (mult)
+        ; f2: temp result cell value (sum)
+        ; f4: temp result cell value (mult)
         
-        ; f4: temp value MATRIZ_A[i][j] (elementA)
-        ; f6: temp value VECTOR_X[j] (elementX)
+        ; f6: temp value MATRIZ_A[i][j] (elementA)
+        ; f8: temp value VECTOR_X[j] (elementX)
 
         ; r9: offset calculation A (offsetRowElementsA)
         ; r10: offset calculation A (offsetElementsA)
@@ -46,6 +47,9 @@
 
         ; Load n from N
         lw r1, N                                        ; n = *N
+        
+        ; Initialize Zero variable 
+        ld f0, ZERO                                     ; zero = 0
 
         ; Set element size to 8 bytes (.double)
         addi r2, r0, 8                                  ; elementSize = 8
@@ -58,8 +62,8 @@
                 nop
         body_loop_i:
 
-                ; Initialize variables 
-                ld f0, ZERO                             ; sum = 0
+                ; Initialize Sum variable 
+                addd f2, f0, f0                         ; sum = 0
 
                 setup_loop_j:
                         addi r4, r0, 0                  ; j = 0
@@ -71,21 +75,21 @@
 
                         ; Load elementA from MATRIZ_A[i][j]
                         mult r9, r3, r1                 ; offsetRowElementsA = i * n
-                        add r10, r9, r3                 ; offsetElementsA = offsetRowElementsA + j                              
+                        add r10, r9, r4                 ; offsetElementsA = offsetRowElementsA + j                              
                         mult r11, r10, r2               ; offsetA = offsetElementsA * elementSize
-                        addi r12, r11, MATRIZ_A         ; addressElementA = addressA + offsetA
-                        ld f4, 0(r12)                   ; elementA = *addressElementA
+                        addi r12, r11, MATRIZ_A         ; addressElementA = offsetA + addressA
+                        ld f6, 0(r12)                   ; elementA = *addressElementA
                         
                         ; Load elementX from VECTOR_X[j]                         
-                        mult r13, r3, r2                ; offsetX = j * elementSize
-                        addi r14, r13, VECTOR_X         ; addressElementX = addressX + offsetX
-                        ld f6, 0(r14)                   ; elementX = *addressElementX
+                        mult r13, r4, r2                ; offsetX = j * elementSize
+                        addi r14, r13, VECTOR_X         ; addressElementX = offsetX + addressX
+                        ld f8, 0(r14)                   ; elementX = *addressElementX
 
                         ; Calculate mult value
-                        multd f2, f4, f6                ; mult = elementA * elementX
+                        multd f4, f6, f8                ; mult = elementA * elementX
                         
                         ; Update sum value
-                        addd f0, f0, f2                 ; sum = sum + mult
+                        addd f2, f2, f4                 ; sum = sum + mult
 
                 tail_loop_j:
                         addi r3, r3, 1                  ; j++
@@ -94,12 +98,12 @@
                 end_loop_j:
                 
                 ; Store sum in RESULTADO_B[i]
-                mult r15, r0, r2                        ; offsetB = i * elementSize
-                addi r16, r15, RESULTADO_B              ; addressElementB = addressB + offsetB
-                sd 0(r14), f0                           ; *addressElementB = sum
+                mult r15, r3, r2                        ; offsetB = i * elementSize
+                addi r16, r15, RESULTADO_B              ; addressElementB = offsetB + addressB
+                sd 0(r14), f2                           ; *addressElementB = sum
                 
         tail_loop_i:
-                addi r0, r0, 1                          ; i++
+                addi r3, r3, 1                          ; i++
                 j start_loop_i
                 nop
         end_loop_i:
