@@ -5,11 +5,13 @@
         
         ; matriz NxN
         MATRIZ_A: .double 11,12,13,14,15,16,21,22,23,24,25,26
-        MATRIZ_A_2: .double 31,32,33,34,35,36,41,42,43,44,45,46
-        MATRIZ_A_3: .double 51,52,53,54,55,56,61,62,63,64,65,66
+                  .double 31,32,33,34,35,36,41,42,43,44,45,46
+                  .double 51,52,53,54,55,56,61,62,63,64,65,66
         
         ; vector Nx1 
         VECTOR_X: .double 1,2,3,4,5,6
+
+        MATRIZ_C: .space 288
         
         ; valor 0
         CERO: .double 0
@@ -19,13 +21,13 @@
         
 .text
 
-        ; r0: valor 0
+        ; cero: valor 0
         ; f0: valor 0
 
-        ; r1: valor de N (n)
+        ; n: valor de N (n)
         ; r2: tamanio de los elementos (tamanioElemento)
 
-        ; r3: indice de filas (i)
+        ; i: indice de filas (i)
         ; r4: indice de columnas (j)
 
         ; f2: resultado de la suma de las multiplicaciones (suma)
@@ -45,65 +47,81 @@
         ; r11: offset de la direccion del elemento i de B respecto al inicio de B (offsetElementoB)
         ; r12: direccion del elemento i de B (direccionElementoB)
         
-        ; r13: variable provisional para saltos y comparaciones (temp)
-        
+        ; temp: variable provisional para saltos y comparaciones (temp)
+
+
+        ; **** Inicializacion ****
+
         ; Inicializa cero 
-        ld f0, CERO                                     ; cero = 0
+        ld f0, CERO                                                     ; cero = 0
 
         ; Carga el valor de N
-        lw r1, N                                        ; n = *N
+        lw r1, N                                                        ; n = &N
 
-        ; Establece el tamanio de los elementos como de 8 bytes (.double)
-        addi r2, r0, 8                                  ; tamanioElemento = 8
+        ; Carga el vector X
+        lv vectorX, VECTOR_X                                            ; vectorX = &VECTOR_X
+        
+        ; Calcula el tamanio de una fila
+        mult tamanioFila, n, tamanioElemento                            ; tamanioFila = n * tamanioElemento 
+
+        ; Inicializa el registro longitud de vectores
+        movi2s vlr, n                                                   ; vlr = n
+
+        ; **** Multiplica las filas de A por el vector X ****
 
         setup_loop_i:
-                addi r3, r0, 0                          ; i = 0
+                addi i, cero, 0                                         ; i = 0
         start_loop_i:
-                sge r13, r3, r1                         ; if i >= n
-                bnez r13, end_loop_i                    ; then goto end_loop_i
-        body_loop_i:
+                sge temp, i, n                                          ; if i >= n
+                bnez temp, end_loop_i                                   ; then goto end_loop_i
+        body_loop_i:    
 
-                ; Inicializa la variable suma  
-                addd f2, f0, f0                         ; suma = 0
+                ; Calcula el desplazamiento hasta la fila actual
+                mult offsetFilaI, i, tamanioFila                        ; offsetFilaI = i * tamanioFila
 
-                setup_loop_j:
-                        addi r4, r0, 0                  ; j = 0
-                start_loop_j:
-                        sge r13, r4, r1                 ; if j >= n
-                        bnez r13, end_loop_j            ; then goto end_loop_j
-                body_loop_j:
-
-                        ; Carga el elemento MATRIZ_A[i][j]
-                        mult r5, r3, r1                 ; elementosFilasA = i * n
-                        add r6, r5, r4                  ; posicionElementoA = elementosFilasA + j                              
-                        mult r7, r6, r2                 ; offsetElementoA = posicionElementoA * tamanioElemento
-                        addi r8, r7, MATRIZ_A           ; direccionElementoA = offsetElementoA + addressA
-                        ld f6, 0(r8)                    ; elementoA = *direccionElementoA
-                        
-                        ; Carga el elemento VECTOR_X[j]                         
-                        mult r9, r4, r2                 ; offsetElementoX = j * tamanioElemento
-                        addi r10, r9, VECTOR_X          ; direccionElementoX = offsetElementoX + addressX
-                        ld f8, 0(r10)                   ; elementoX = *direccionElementoX
-
-                        ; Calcula la multiplicacion
-                        multd f4, f6, f8                ; mult = elementoA * elementoX
-                        
-                        ; Se lo anade a la suma
-                        addd f2, f2, f4                 ; suma = suma + mult
-
-                tail_loop_j:
-                        addi r4, r4, 1                  ; j++
-                        j start_loop_j                  ; goto start_loop_j
-                end_loop_j:
+                ; Carga la fila A[i]
+                addi direccionFilaA, offsetFilaI, MATRIZ_A              ; direccionFilaA = offsetFilaI + *MATRIZ_A
+                lv filaA, direccionFilaA                                ; filaA = &direccionFilaA
                 
-                ; Guarda la suma en RESULTADO_B[i]
-                mult r11, r3, r2                        ; offsetElementoB = i * tamanioElemento
-                addi r12, r11, RESULTADO_B              ; direccionElementoB = offsetElementoB + addressB
-                sd 0(r12), f2                           ; *direccionElementoB = suma
+                ; Multiplica la fila A[i] y el vector X
+                multv filaC, vectorX, filaA                             ; filaC = vectorX *vec filaA      
+
+                ; Almacena el resultado en C[i]       
+                addi direccionFilaC, offsetFilaI, MATRIZ_C              ; direccionFilaC = offsetFilaI + *MATRIZ_C
+                sv direccionFilaC, filaC                                ; *direccionFilaC = filaC
                 
         tail_loop_i:
-                addi r3, r3, 1                          ; i++
+                addi i, i, 1                                            ; i++
                 j start_loop_i
         end_loop_i:       
+
+        ; **** Suma las multiplicaciones ****
+
+        ; Inicializa el vector resultado B a todo ceros
+        multsv vectorB, cero, vectorB                                   ; vectorB = [0,0...]
+
+        setup_loop_j:
+                addi j, cero, 0                                         ; j = 0
+        start_loop_j:
+                sge temp, j, n                                          ; if j >= n
+                bnez temp, end_loop_j                                   ; then goto end_loop_j
+        body_loop_j:
+
+                ; Carga la columna C[][j]
+                mult offsetColumna, j, tamanioElemento                  ; offsetColumna = j * tamanioElemento 
+                addi direccionColumna, offsetColumna, MATRIZ_C          ; direccionColumna = offsetColumna + *MATRIZ_C 
+                lvws columnaC, direccionColumna, tamanioFila            ; columnaC = *direccionColumna con tamanioFila entre cada elemento
+
+                ; Suma la columna C[][j] al vector resultado B
+                addv vectorB, vectorB, columnaC                         ; vectorB += columnaC
+                
+        tail_loop_j:
+                addi j, j, 1                                            ; j++
+                j start_loop_j
+        end_loop_j:  
+
+        ; Almacena el vector resultado en B
+        addi direccionVectorB, cero, MATRIZ_B                           ; direccionVectorB = *MATRIZ_B
+        sv direccionVectorB, vectorB                                    ; *direccionVectorB = vectorB
 
         trap 6

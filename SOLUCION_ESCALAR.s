@@ -5,8 +5,8 @@
         
         ; matriz NxN
         MATRIZ_A: .double 11,12,13,14,15,16,21,22,23,24,25,26
-        MATRIZ_A_2: .double 31,32,33,34,35,36,41,42,43,44,45,46
-        MATRIZ_A_3: .double 51,52,53,54,55,56,61,62,63,64,65,66
+                  .double 31,32,33,34,35,36,41,42,43,44,45,46
+                  .double 51,52,53,54,55,56,61,62,63,64,65,66
         
         ; vector Nx1 
         VECTOR_X: .double 1,2,3,4,5,6
@@ -47,14 +47,18 @@
         
         ; r13: variable provisional para saltos y comparaciones (temp)
         
+        ; **** Inicializacion ****
+
         ; Inicializa cero 
         ld f0, CERO                                     ; cero = 0
 
         ; Carga el valor de N
-        lw r1, N                                        ; n = *N
+        lw r1, N                                        ; n = &N
 
         ; Establece el tamanio de los elementos como de 8 bytes (.double)
         addi r2, r0, 8                                  ; tamanioElemento = 8
+
+        ; **** Multiplica la matriz y el vector ****
 
         setup_loop_i:
                 addi r3, r0, 0                          ; i = 0
@@ -77,19 +81,19 @@
                         mult r5, r3, r1                 ; elementosFilasA = i * n
                         add r6, r5, r4                  ; posicionElementoA = elementosFilasA + j                              
                         mult r7, r6, r2                 ; offsetElementoA = posicionElementoA * tamanioElemento
-                        addi r8, r7, MATRIZ_A           ; direccionElementoA = offsetElementoA + addressA
-                        ld f6, 0(r8)                    ; elementoA = *direccionElementoA
+                        addi r8, r7, MATRIZ_A           ; direccionElementoA = offsetElementoA + *MATRIZ_A
+                        ld f6, 0(r8)                    ; elementoA = &direccionElementoA
                         
                         ; Carga el elemento VECTOR_X[j]                         
                         mult r9, r4, r2                 ; offsetElementoX = j * tamanioElemento
-                        addi r10, r9, VECTOR_X          ; direccionElementoX = offsetElementoX + addressX
-                        ld f8, 0(r10)                   ; elementoX = *direccionElementoX
+                        addi r10, r9, VECTOR_X          ; direccionElementoX = offsetElementoX + *VECTOR_X
+                        ld f8, 0(r10)                   ; elementoX = &direccionElementoX
 
                         ; Calcula la multiplicacion
                         multd f4, f6, f8                ; mult = elementoA * elementoX
                         
                         ; Se lo anade a la suma
-                        addd f2, f2, f4                 ; suma = suma + mult
+                        addd f2, f2, f4                 ; suma += mult
 
                 tail_loop_j:
                         addi r4, r4, 1                  ; j++
@@ -98,7 +102,7 @@
                 
                 ; Guarda la suma en RESULTADO_B[i]
                 mult r11, r3, r2                        ; offsetElementoB = i * tamanioElemento
-                addi r12, r11, RESULTADO_B              ; direccionElementoB = offsetElementoB + addressB
+                addi r12, r11, RESULTADO_B              ; direccionElementoB = offsetElementoB + *RESULTADO_B
                 sd 0(r12), f2                           ; *direccionElementoB = suma
                 
         tail_loop_i:
