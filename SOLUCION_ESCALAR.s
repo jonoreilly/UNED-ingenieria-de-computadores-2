@@ -31,8 +31,8 @@
         ; f2: resultado de la suma de las multiplicaciones (suma)
         ; f4: resultado de la multiplicacion entre elementos de A y X (mult)
         
-        ; f6: valor del elemento MATRIZ_A[i][j] (elementA)
-        ; f8: valor del elemento VECTOR_X[j] (elementX)
+        ; f6: valor del elemento MATRIZ_A[i][j] (elementoA)
+        ; f8: valor del elemento VECTOR_X[j] (elementoX)
 
         ; r5: elementos de las i filas de A (elementosFilasA)
         ; r6: posicion del elemento i,j de A (posicionElementoA)
@@ -78,15 +78,15 @@
                         add r6, r5, r4                  ; posicionElementoA = elementosFilasA + j                              
                         mult r7, r6, r2                 ; offsetElementoA = posicionElementoA * tamanioElemento
                         addi r8, r7, MATRIZ_A           ; direccionElementoA = offsetElementoA + addressA
-                        ld f6, 0(r8)                    ; elementA = *direccionElementoA
+                        ld f6, 0(r8)                    ; elementoA = *direccionElementoA
                         
                         ; Carga el elemento VECTOR_X[j]                         
                         mult r9, r4, r2                 ; offsetElementoX = j * tamanioElemento
                         addi r10, r9, VECTOR_X          ; direccionElementoX = offsetElementoX + addressX
-                        ld f8, 0(r10)                   ; elementX = *direccionElementoX
+                        ld f8, 0(r10)                   ; elementoX = *direccionElementoX
 
                         ; Calcula la multiplicacion
-                        multd f4, f6, f8                ; mult = elementA * elementX
+                        multd f4, f6, f8                ; mult = elementoA * elementoX
                         
                         ; Se lo anade a la suma
                         addd f2, f2, f4                 ; suma = suma + mult
