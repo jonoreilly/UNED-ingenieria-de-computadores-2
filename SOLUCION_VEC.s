@@ -49,78 +49,78 @@
         ; **** Inicializacion ****
 
         ; Inicializa cero 
-        ld f0, CERO                                             ; cero = 0
+        ld f0, CERO                                     ; cero = 0
 
         ; Carga el valor de N
-        lw r1, N                                                ; n = &N
+        lw r1, N                                        ; n = &N
 
         ; Inicializa el registro longitud de vectores
-        movi2s vlr, r1                                          ; vlr = n
+        movi2s vlr, r1                                  ; vlr = n
 
         ; Establece el tamanio de los elementos como de 8 bytes (.double)
-        addi r2, r0, 8                                          ; tamanioElemento = 8
+        addi r2, r0, 8                                  ; tamanioElemento = 8
         
         ; Calcula el tamanio de una fila
-        mult r3, r1, r2                                         ; tamanioFila = n * tamanioElemento 
+        mult r3, r1, r2                                 ; tamanioFila = n * tamanioElemento 
 
         ; Carga el vector X
-        lv v0, VECTOR_X                                         ; vectorX = &VECTOR_X
+        lv v0, VECTOR_X                                 ; vectorX = &VECTOR_X
         
         ; **** Multiplica las filas de A por el vector X ****
 
         setup_loop_i:
-                addi r4, r0, 0                                  ; i = 0
+                addi r4, r0, 0                          ; i = 0
         start_loop_i:
-                sge r12, r4, r1                                 ; if i >= n
-                bnez r12, end_loop_i                            ; then goto end_loop_i
+                sge r12, r4, r1                         ; if i >= n
+                bnez r12, end_loop_i                    ; then goto end_loop_i
         body_loop_i:    
 
                 ; Calcula el desplazamiento hasta la fila actual
-                mult r6, r4, r3                                 ; desplazamientoFilaI = i * tamanioFila
+                mult r6, r4, r3                         ; desplazamientoFilaI = i * tamanioFila
 
                 ; Carga la fila A[i]
-                addi r7, r6, MATRIZ_A                           ; direccionFilaA = desplazamientoFilaI + *MATRIZ_A
-                lv v1, r7                                       ; filaA = &direccionFilaA
+                addi r7, r6, MATRIZ_A                   ; direccionFilaA = desplazamientoFilaI + *MATRIZ_A
+                lv v1, 0(r7)                            ; filaA = &direccionFilaA
                 
                 ; Multiplica la fila A[i] y el vector X
-                multv v2, v0, v1                                ; filaC = vectorX *vec filaA      
+                multv v2, v0, v1                        ; filaC = vectorX *vec filaA      
 
                 ; Almacena el resultado en C[i]       
-                addi r8, r6, MATRIZ_C                           ; direccionFilaC = desplazamientoFilaI + *MATRIZ_C
-                sv r8, v2                                       ; *direccionFilaC = filaC
+                addi r8, r6, MATRIZ_C                   ; direccionFilaC = desplazamientoFilaI + *MATRIZ_C
+                sv 0(r8), v2                            ; *direccionFilaC = filaC
                 
         tail_loop_i:
-                addi r4, r4, 1                                  ; i++
+                addi r4, r4, 1                          ; i++
                 j start_loop_i
         end_loop_i:       
 
         ; **** Suma las multiplicaciones ****
 
         ; Inicializa el vector resultado B a todo ceros
-        multsv v3, f0, v3                                       ; vectorB = [0,0...]
+        multsv v3, f0, v3                               ; vectorB = [0,0...]
 
         setup_loop_j:
-                addi r5, r0, 0                                  ; j = 0
+                addi r5, r0, 0                          ; j = 0
         start_loop_j:
-                sge r12, r5, r1                                 ; if j >= n
-                bnez r12, end_loop_j                            ; then goto end_loop_j
+                sge r12, r5, r1                         ; if j >= n
+                bnez r12, end_loop_j                    ; then goto end_loop_j
         body_loop_j:
 
                 ; Carga la columna C[][j]
-                mult r9, r5, r2                                 ; desplazamientoColumnaC = j * tamanioElemento 
-                addi r10, r9, MATRIZ_C                          ; direccionColumnaC = desplazamientoColumnaC + *MATRIZ_C 
-                lvws v4, r10, r3                                ; columnaC = *direccionColumnaC con tamanioFila entre cada elemento
+                mult r9, r5, r2                         ; desplazamientoColumnaC = j * tamanioElemento 
+                addi r10, r9, MATRIZ_C                  ; direccionColumnaC = desplazamientoColumnaC + *MATRIZ_C 
+                lvws v4, r10, r3                        ; columnaC = *direccionColumnaC con tamanioFila entre cada elemento
 
                 ; Suma la columna C[][j] al vector resultado B
-                addv v3, v3, v4                                 ; vectorB += columnaC
+                addv v3, v3, v4                         ; vectorB += columnaC
                 
         tail_loop_j:
-                addi r5, r5, 1                                  ; j++
+                addi r5, r5, 1                          ; j++
                 j start_loop_j
         end_loop_j:  
 
         ; Almacena el vector resultado en B
-        addi r11, r0, MATRIZ_B                                  ; direccionVectorB = *MATRIZ_B
-        sv r11, v3                                              ; *direccionVectorB = vectorB
+        addi r11, r0, RESULTADO_B                       ; direccionVectorB = *MATRIZ_B
+        sv 0(r11), v3                                   ; *direccionVectorB = vectorB
 
         trap 6
